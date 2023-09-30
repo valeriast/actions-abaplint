@@ -59,7 +59,7 @@ async function run() {
   });
 
   const repo = process.env.GITHUB_REPOSITORY.split("/");
-  for (var i = 0; i < 1; i++) {
+  // for (var i = 0; i < 1; i++) {
     const create = await octokit.checks.create({
       owner: repo[0],
       repo: repo[1],
@@ -69,7 +69,7 @@ async function run() {
       output: {title: "Summary", summary, annotations},
       completed_at: new Date().toISOString(),
       head_sha: process.env.GITHUB_SHA});
-  }
+  // }
 }
 run().then(text => {
   process.exit();
