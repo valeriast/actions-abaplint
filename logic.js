@@ -11,7 +11,6 @@ function buildAnnotations() {
   const annotations = [];
 
   for(let issue of issues) {
-    console.log("valeriatest" + issue.file)
      if (process.env.CHANGEDFILES.includes(issue.file.substring(2))) {
       annotations.push({
         path: issue.file.substring(2),
