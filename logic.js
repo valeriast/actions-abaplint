@@ -64,7 +64,7 @@ async function run() {
   for (var i = 0; i < 2; i++) {
     annotationarray = []
     annotation = {}
-    annotation = annotations.at(0)
+    annotation = annotations[0]
     annotationarray.push(annotation)
     const create = await octokit.checks.create({
       owner: repo[0],
