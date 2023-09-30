@@ -1,30 +1,34 @@
 # actions-abaplint
 
-abaplint GitHub action
+It's based on https://github.com/abaplint/actions-abaplint.
 
-For additional features, faster feedback, and support use [abaplint.app](https://abaplint.app)
+The purpose is to create annotation only for changed files.
 
 ### Usage
 
 ```yml
 name: lint
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
-  lint:
-
+  build:
     runs-on: ubuntu-latest
-
+    name: Abaplint
     steps:
-    - uses: actions/checkout@v2
-    - name: abaplint
-      uses: abaplint/actions-abaplint@main
-      # GITHUB_TOKEN in forked repositories is read-only
-      # https://help.github.com/en/actions/reference/events-that-trigger-workflows#pull-request-event-pull_request
-      if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v14.6
+
+      - name: abaplint
+        uses: valeriast/actions-abaplint@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CHANGEDFILES: ${{ steps.changed-files.outputs.all_changed_files }}
 ```
 
 The GITHUB_TOKEN is used to push back the results via the [Checks API](https://developer.github.com/v3/checks/)
@@ -34,4 +38,3 @@ A specific version can be chosen by setting the `version` attribute, if not set,
       with:
         version: '2.36.5'
 ```
-# actions-abaplint
