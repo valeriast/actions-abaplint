@@ -22,10 +22,10 @@ function buildAnnotations() {
         title: issue.description,
         annotation_level: "failure",
         message: issue.key});
-      // if (annotations.length === 50) {
-      //   break; // only 50 annotations allowed, see https://developer.github.com/v3/checks/runs/
-      // }
-      // issueCount ++
+      if (annotations.length === 100) {
+        break; // only 50 annotations allowed, see https://developer.github.com/v3/checks/runs/
+      }
+      issueCount ++
     }
 
     // if ( issueCount === 50 ){
@@ -59,18 +59,18 @@ async function run() {
   });
 
   const repo = process.env.GITHUB_REPOSITORY.split("/");
-  
-  const create = await octokit.checks.create({
-    owner: repo[0],
-    repo: repo[1],
-    name: "results",
-    status: "completed",
-    conclusion: annotations.length === 0 ? "success" : "failure",
-    output: {title: "Summary", summary, annotations},
-    completed_at: new Date().toISOString(),
-    head_sha: process.env.GITHUB_SHA});
+  for (var i = 0; i < 1; i++) {
+    const create = await octokit.checks.create({
+      owner: repo[0],
+      repo: repo[1],
+      name: "results",
+      status: "completed",
+      conclusion: annotations.length === 0 ? "success" : "failure",
+      output: {title: "Summary", summary, annotations},
+      completed_at: new Date().toISOString(),
+      head_sha: process.env.GITHUB_SHA});
+  }
 }
-
 run().then(text => {
   process.exit();
 }).catch(err => {
