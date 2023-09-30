@@ -22,7 +22,7 @@ function buildAnnotations() {
         title: issue.description,
         annotation_level: "failure",
         message: issue.key});
-      if (annotations.length === 100) {
+      if (annotations.length === 50) {
         break; // only 50 annotations allowed, see https://developer.github.com/v3/checks/runs/
       }
       issueCount ++
