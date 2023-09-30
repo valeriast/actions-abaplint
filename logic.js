@@ -60,9 +60,10 @@ async function run() {
 
   const repo = process.env.GITHUB_REPOSITORY.split("/");
   let annotationarray = [] 
+  let annotation = {}
   for (var i = 0; i < 2; i++) {
     annotationarray = []
-    let annotation = annotations[i]
+    annotation = annotations[i]
     annotationarray.push(annotation)
     const create = await octokit.checks.create({
       owner: repo[0],
