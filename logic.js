@@ -3,6 +3,7 @@ const fs = require('fs');
 const octokit = require('@octokit/rest')({
     baseUrl: process.env.GITHUB_API_URL,
 });
+let annotationCount = 0;
 
 function buildAnnotations() {
   const val = fs.readFileSync("/result.json", "utf-8");
@@ -24,17 +25,17 @@ function buildAnnotations() {
       }
     }
   }
-
+  annotationCount = annotation.length
   return annotations;
 }
 
 function buildSummary() {
-  const issues = JSON.parse(fs.readFileSync("/result.json", "utf-8"));
+  // const issues = JSON.parse(fs.readFileSync("/result.json", "utf-8"));
 
   const actual = childProcess.execSync(`abaplint --version`).toString();
 
-  const first = issues.length > 50 ? "(first 50 shown)" : "";
-  return issues.length + " issues found"+ first + "\n\n" +
+  const first = annotationCount > 50 ? "(first 50 shown)" : "";
+  return annotationCount + " issues found"+ first + "\n\n" +
     "Installed @abaplint/cli@" + process.env.INPUT_VERSION + "\n\n" +
     "Actual " + actual + "\n\n" +
     "For additional features, faster feedback, and support use [abaplint.app](https://abaplint.app)";
