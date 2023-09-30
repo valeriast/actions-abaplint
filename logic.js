@@ -25,7 +25,7 @@ function buildAnnotations() {
       if (annotations.length === 50) {
         break; // only 50 annotations allowed, see https://developer.github.com/v3/checks/runs/
       }
-      issueCount ++
+      // issueCount ++
     }
 
     // if ( issueCount === 50 ){
