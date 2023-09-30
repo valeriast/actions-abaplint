@@ -7,14 +7,15 @@ The purpose is to create annotation only for changed files.
 ### Usage
 
 ```yml
-name: lint
+name: Abaplint
 
 on: [push]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Abaplint
+    name: Job
+    
     steps:
       - uses: actions/checkout@v2
         with:
@@ -24,7 +25,7 @@ jobs:
         id: changed-files
         uses: tj-actions/changed-files@v14.6
 
-      - name: abaplint
+      - name: Abaplint action
         uses: valeriast/actions-abaplint@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
