@@ -53,7 +53,11 @@ jobs:
       - name: Get changed files
         id: changes
         run: |
-          echo "all=$(git diff --name-only HEAD^)" >> "$GITHUB_OUTPUT"
+          {
+            echo 'all<<EOF'
+            echo $(git diff --name-only HEAD^)
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
       - name: abaplint
         uses: valeriast/actions-abaplint@main
         env:
