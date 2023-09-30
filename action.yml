@@ -1,0 +1,14 @@
+name: abaplint Action
+description: Lint ABAP code
+author: abaplint
+branding:
+  color: blue
+  icon: cloud-drizzle
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+inputs:
+  version:
+    description: 'abaplint version'
+    required: false
+    default: 'latest'
