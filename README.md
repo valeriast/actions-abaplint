@@ -2,7 +2,7 @@
 
 It's based on https://github.com/abaplint/actions-abaplint.
 
-The purpose is to create annotion only for changed files.
+The purpose is to create annotation only for changed files.
 
 ### Usage
 
