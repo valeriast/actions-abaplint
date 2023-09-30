@@ -15,7 +15,7 @@ function buildAnnotations() {
   // const issueCount = 0
   for(let issue of issues) {
      if (process.env.CHANGEDFILES.includes(issue.file.substring(2))) {
-      annotations[annotationGroup].push({
+      annotations.push({
         path: issue.file.substring(2),
         start_line: issue.start.row,
         end_line: issue.end.row,
