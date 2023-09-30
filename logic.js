@@ -25,7 +25,7 @@ function buildAnnotations() {
       }
     }
   }
-  annotationCount = annotation.length
+  annotationCount = annotations.length
   return annotations;
 }
 
