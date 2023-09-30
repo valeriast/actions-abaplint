@@ -18,7 +18,7 @@ function buildAnnotations() {
         start_line: issue.start.row,
         end_line: issue.end.row,
         // title: issue.description,
-        title: process.env.CHANGEDFILES[0],
+        title: process.env.CHANGEDFILES,
         annotation_level: "failure",
         message: issue.key});
       if (annotations.length === 50) {
