@@ -11,8 +11,8 @@ function buildAnnotations() {
   const annotations = [];
 
   for(let issue of issues) {
-    // console.log("valeriatest" + issue.file)
-    // if (process.env.CHANGEDFILES.includes(issue.file)) {
+    console.log("valeriatest" + issue.file)
+    if (process.env.CHANGEDFILES.includes(issue.file)) {
       annotations.push({
         path: issue.file.substring(2),
         start_line: issue.start.row,
@@ -23,7 +23,7 @@ function buildAnnotations() {
       if (annotations.length === 50) {
         break; // only 50 annotations allowed, see https://developer.github.com/v3/checks/runs/
       }
-  //  }
+   }
   }
 
   return annotations;
