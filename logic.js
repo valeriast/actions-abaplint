@@ -63,6 +63,7 @@ async function run() {
   let annotation = {}
   for (var i = 0; i < 2; i++) {
     annotationarray = []
+    annotation = {}
     annotation = annotations[i]
     annotationarray.push(annotation)
     const create = await octokit.checks.create({
