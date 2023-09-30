@@ -59,7 +59,7 @@ async function run() {
   });
 
   const repo = process.env.GITHUB_REPOSITORY.split("/");
-   for (var i = 0; i < 1; i++) {
+   for (var i = 0; i < 2; i++) {
     const create = await octokit.checks.create({
       owner: repo[0],
       repo: repo[1],
