@@ -62,7 +62,8 @@ async function run() {
       const create = await octokit.checks.create({
         owner: repo[0],
         repo: repo[1],
-        name: 'Findings group: ' + group ,
+        // name: 'Finding group: ' + group ,
+        name: "Results",
         status: "completed",
         conclusion: annotations.length === 0 ? "success" : "failure",
         output: {title: "Summary" , summary, annotations},
