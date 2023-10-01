@@ -59,36 +59,17 @@ async function run() {
   });
 
   const repo = process.env.GITHUB_REPOSITORY.split("/");
-  const annotationarray = []
-  let annotationCount = 0
-  let annotationlimit = annotations.length
-  for(let annotation of annotations) {
-    annotationarray.push(annotation)
-    annotationCount++
-    annotationlimit--
-    if (annotationCount === 50 || annotationlimit === 0){
-      const create = await octokit.checks.create({
-        owner: repo[0],
-        repo: repo[1],
-        name: "results",
-        status: "completed",
-        conclusion: annotations.length === 0 ? "success" : "failure",
-        output: {title: "Summary" , summary, annotationarray},
-        completed_at: new Date().toISOString(),
-        head_sha: process.env.GITHUB_SHA});
+  const arrayannotation = annotations
+  const create = await octokit.checks.create({
+    owner: repo[0],
+    repo: repo[1],
+    name: "results",
+    status: "completed",
+    conclusion: annotations.length === 0 ? "success" : "failure",
+    output: {title: "Summary" , summary, arrayannotation},
+    completed_at: new Date().toISOString(),
+    head_sha: process.env.GITHUB_SHA});
 
-        // set the length to 0
-        annotationarray.length = 0;
-        // use splice to remove all items
-        annotationarray.splice(0, annotationarray.length);
-        // loop through array and remove each item with pop()
-        while (annotationarray.length > 0) {
-          annotationarray.pop();
-        }
-        annotationCount = 0
-    }
-    
-  }
 }
 run().then(text => {
   process.exit();
