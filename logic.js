@@ -59,23 +59,29 @@ async function run() {
   });
 
   const repo = process.env.GITHUB_REPOSITORY.split("/");
-  let annotationarray = [] 
-  let annotation = {}
-  for (var i = 0; i < 2; i++) {
-    annotationarray = []
-    annotation = {}
-    annotation = annotations[0]
+  const annotationarray = []
+  const annotationCount = 0
+  const annotationlimit = annotations.length
+  for(let annotation of annotations) {
     annotationarray.push(annotation)
-    const create = await octokit.checks.create({
-      owner: repo[0],
-      repo: repo[1],
-      name: "results",
-      status: "completed",
-      conclusion: annotations.length === 0 ? "success" : "failure",
-      output: {title: annotations , summary, annotationarray},
-      completed_at: new Date().toISOString(),
-      head_sha: process.env.GITHUB_SHA});
-   }
+    annotationCount++
+    annotationlimit--
+    if (annotationCount === 50 || annotationlimit === 0){
+      const create = await octokit.checks.create({
+        owner: repo[0],
+        repo: repo[1],
+        name: "results",
+        status: "completed",
+        conclusion: annotations.length === 0 ? "success" : "failure",
+        output: {title: "Summary" , summary, annotationarray},
+        completed_at: new Date().toISOString(),
+        head_sha: process.env.GITHUB_SHA});
+
+        annotationarray = []
+        annotationCount = 0
+    }
+    
+  }
 }
 run().then(text => {
   process.exit();
