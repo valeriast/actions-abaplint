@@ -72,7 +72,7 @@ async function run() {
       name: "results",
       status: "completed",
       conclusion: annotations.length === 0 ? "success" : "failure",
-      output: {title: "Summary", annotation, annotationarray},
+      output: {title: annotations , summary, annotationarray},
       completed_at: new Date().toISOString(),
       head_sha: process.env.GITHUB_SHA});
    }
