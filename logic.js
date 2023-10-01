@@ -62,6 +62,7 @@ async function run() {
   let arrayannotation = annotations
   let annotationCount = 0
   let annotationlimit = annotations.length
+  let group = 1
   annotations = []
   for(let annotation of arrayannotation) {
     annotations.push(annotation)
@@ -71,7 +72,7 @@ async function run() {
       const create = await octokit.checks.create({
         owner: repo[0],
         repo: repo[1],
-        name: "results",
+        name: 'Findings group: ' + group ,
         status: "completed",
         conclusion: annotations.length === 0 ? "success" : "failure",
         output: {title: "Summary" , summary, annotations},
