@@ -81,6 +81,7 @@ async function run() {
 
         annotations = []
         annotationCount = 0
+        group++
     }
     
   }
