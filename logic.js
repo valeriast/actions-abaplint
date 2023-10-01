@@ -55,31 +55,48 @@ async function run() {
   let arrayannotation = annotations
   let annotationCount = 0
   let annotationlimit = annotations.length
-  let group = 1
+  let needsUpdate = 0
+  let statusCheck = "in_progress"
+  let checkrunid = 0
   annotations = []
   for(let annotation of arrayannotation) {
     annotations.push(annotation)
     annotationCount++
     annotationlimit--
-    if (annotationCount === 50 || annotationlimit === 0){
+    if (annotationlimit === 0 ){
+      statusCheck = "completed"
+    }
+    if ((annotationCount === 1 && needsUpdate === 0 )){
       const create = await octokit.checks.create({
         owner: repo[0],
         repo: repo[1],
-        name: 'Finding group: ' + group,
-        status: "completed",
+        name: 'results',
+        status: statusCheck,
         conclusion: annotations.length === 0 ? "success" : "failure",
         output: {title: "Summary" , summary, annotations},
         completed_at: new Date().toISOString(),
         head_sha: process.env.GITHUB_SHA});
 
+        needsUpdate = 1
         annotations = []
-        annotationCount = 0
-        group++
+        checkrunid = create.data.id
+    }else if (annotationCount > 1 && needsUpdate === 1){
+      const update = await octokit.checks.update({
+        owner: repo[0],
+        repo: repo[1],
+        check_run_id: checkrunid, 
+        status: statusCheck, 
+        conclusion: annotations.length === 0 ? "success" : "failure",
+        output: {
+          title: "Updated Summary",
+          summary: summary,
+          annotations: annotations,
+        }});
+        annotations = []
     }
-    
   }
-
 }
+  
 run().then(text => {
   process.exit();
 }).catch(err => {
