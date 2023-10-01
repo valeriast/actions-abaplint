@@ -32,7 +32,7 @@ function buildSummary() {
   const actual = childProcess.execSync(`abaplint --version`).toString();
 
   return annotationTotal + " issues found in total (all finding groups)"+ "\n\n" +
-    "What are findings groups? Github Actions has a limit of 50 annotations per API call." + "\n\n" +
+    "What are finding groups? Github Actions has a limit of 50 annotations per API call." + "\n\n" +
     "In order to overcome the limitation we create a finding group for each 50 issues found so all annotations will be displayed in files changed tab." + "\n\n" +
     "Installed @abaplint/cli@" + process.env.INPUT_VERSION + "\n\n" +
     "Actual " + actual + "\n\n" +
@@ -62,8 +62,7 @@ async function run() {
       const create = await octokit.checks.create({
         owner: repo[0],
         repo: repo[1],
-        // name: 'Finding group: ' + group ,
-        name: "Results",
+        name: 'Finding group: ' + group,
         status: "completed",
         conclusion: annotations.length === 0 ? "success" : "failure",
         output: {title: "Summary" , summary, annotations},
