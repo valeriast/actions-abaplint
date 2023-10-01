@@ -59,9 +59,9 @@ async function run() {
   });
 
   const repo = process.env.GITHUB_REPOSITORY.split("/");
-  const annotationarray = []
-  const annotationCount = 0
-  const annotationlimit = annotations.length
+  let annotationarray = []
+  let annotationCount = 0
+  let annotationlimit = annotations.length
   for(let annotation of annotations) {
     annotationarray.push(annotation)
     annotationCount++
