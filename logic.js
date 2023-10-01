@@ -67,7 +67,7 @@ async function run() {
     annotations.push(annotation)
     annotationCount++
     annotationlimit--
-    if (annotationCount === 50 || annotationlimit === 0){
+    if (annotationCount === 2 || annotationlimit === 0){
       const create = await octokit.checks.create({
         owner: repo[0],
         repo: repo[1],
