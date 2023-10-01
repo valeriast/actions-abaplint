@@ -4,15 +4,13 @@ const octokit = require('@octokit/rest')({
     baseUrl: process.env.GITHUB_API_URL,
 });
 let annotationTotal = 0;
-// const annotationGroup = 0
 
 function buildAnnotations() {
   const val = fs.readFileSync("/result.json", "utf-8");
   console.dir(val);
   const issues = JSON.parse(val);
   const annotations = []
-  // const annotations = [[]];
-  // const issueCount = 0
+
   for(let issue of issues) {
      if (process.env.CHANGEDFILES.includes(issue.file.substring(2))) {
       annotations.push({
@@ -23,7 +21,12 @@ function buildAnnotations() {
         annotation_level: "failure",
         message: issue.key});
     }
+
+    if (annotations.length === 500) {
+      break; // only 1000 checks run allowed, but im limiting to 500 to not exceed api calls see https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28
+    }
   }
+
   annotationTotal = annotations.length
   return annotations;
 }
