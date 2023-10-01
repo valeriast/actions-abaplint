@@ -5,34 +5,6 @@ It's based on https://github.com/abaplint/actions-abaplint.
 The purpose is to create annotation only for changed files.
 
 ### Usage
-Example using tj-actions to retrieve changed files
-```yml
-name: Abaplint
-
-on: [push]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    name: Workflow
-    
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v14.6
-
-      - name: Abaplint action
-        uses: valeriast/actions-abaplint@main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CHANGEDFILES: ${{ steps.changed-files.outputs.all_changed_files }}
-
-```
-
 Example using git diff command to retrieve changed file
 ```yml
 name: Abaplint
@@ -44,18 +16,27 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
      all: ${{steps.changes.outputs.all}}
+     current: ${{steps.getbranchname.outputs.current}}
     steps:
-      - name: Checkout (fetch last two commits) of the PR
+      - name: Checkout
         uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 2
+          fetch-depth: 0
+      - name: Get Current Branch name
+        id: getbranchname
+        run: |
+          {
+            echo 'current<<EOF'
+            echo $(git branch --show-current)
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
       - name: Get changed files
         id: changes
         run: |
           {
             echo 'all<<EOF'
-            echo $(git diff --name-only HEAD^)
+            echo $(git diff --name-only ${{steps.getbranchname.outputs.current}}..origin/main --)
             echo EOF
           } >> "$GITHUB_OUTPUT"
       - name: abaplint
