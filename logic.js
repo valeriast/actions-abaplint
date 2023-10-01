@@ -66,7 +66,7 @@ async function run() {
     if (annotationlimit === 0 ){
       statusCheck = "completed"
     }
-    if ((annotationCount === 1 && needsUpdate === 0 )){
+    if ((annotationCount === 50 && needsUpdate === 0 )){
       const create = await octokit.checks.create({
         owner: repo[0],
         repo: repo[1],
@@ -80,7 +80,7 @@ async function run() {
         needsUpdate = 1
         annotations = []
         checkrunid = create.data.id
-    }else if (annotationCount > 1 && needsUpdate === 1){
+    }else if (annotationCount > 50 && needsUpdate === 1){
       const update = await octokit.checks.update({
         owner: repo[0],
         repo: repo[1],
