@@ -59,7 +59,7 @@ async function run() {
   });
 
   const repo = process.env.GITHUB_REPOSITORY.split("/");
-  let annotationarray = []
+  const annotationarray = []
   let annotationCount = 0
   let annotationlimit = annotations.length
   for(let annotation of annotations) {
@@ -77,7 +77,14 @@ async function run() {
         completed_at: new Date().toISOString(),
         head_sha: process.env.GITHUB_SHA});
 
-        annotationarray = []
+        // set the length to 0
+        annotationarray.length = 0;
+        // use splice to remove all items
+        annotationarray.splice(0, annotationarray.length);
+        // loop through array and remove each item with pop()
+        while (annotationarray.length > 0) {
+          annotationarray.pop();
+        }
         annotationCount = 0
     }
     
