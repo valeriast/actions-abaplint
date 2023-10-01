@@ -66,7 +66,7 @@ async function run() {
     if (annotationlimit === 0 ){
       statusCheck = "completed"
     }
-    if ((annotationCount === 50 && needsUpdate === 0 )){
+    if ((annotationCount === 50 && needsUpdate === 0 ) || annotationlimit === 0  && needsUpdate === 0){
       const create = await octokit.checks.create({
         owner: repo[0],
         repo: repo[1],
@@ -78,9 +78,10 @@ async function run() {
         head_sha: process.env.GITHUB_SHA});
 
         needsUpdate = 1
+        annotationCount = 0
         annotations = []
         checkrunid = create.data.id
-    }else if (annotationCount > 50 && needsUpdate === 1){
+    }else if ((annotationCount === 50 && needsUpdate === 1) || ( annotationlimit === 0  && needsUpdate === 1 )){
       const update = await octokit.checks.update({
         owner: repo[0],
         repo: repo[1],
@@ -93,6 +94,7 @@ async function run() {
           annotations: annotations,
         }});
         annotations = []
+        annotationCount = 0
     }
   }
 }
