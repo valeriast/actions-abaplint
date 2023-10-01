@@ -22,28 +22,18 @@ function buildAnnotations() {
         title: issue.description,
         annotation_level: "failure",
         message: issue.key});
-      if (annotations.length === 50) {
-        break; // only 50 annotations allowed, see https://developer.github.com/v3/checks/runs/
-      }
-      // issueCount ++
     }
-
-    // if ( issueCount === 50 ){
-    //   issueCount = 0
-    //   annotationGroup ++
-    // }
   }
   annotationTotal = annotations.length
   return annotations;
 }
 
 function buildSummary() {
-  // const issues = JSON.parse(fs.readFileSync("/result.json", "utf-8"));
-
   const actual = childProcess.execSync(`abaplint --version`).toString();
 
-  const first = annotationTotal > 50 ? "(first 50 shown)" : "";
-  return annotationTotal + " issues found"+ first + "\n\n" +
+  return annotationTotal + " issues found in total (all finding groups)"+ "\n\n" +
+    "What are findings groups? Github Actions has a limitation of 50 annotations per API call, " +
+    "in order to overcome the limitation we create a finding group for each 50 issues found so all annotations will be displayed in files changed tab." +
     "Installed @abaplint/cli@" + process.env.INPUT_VERSION + "\n\n" +
     "Actual " + actual + "\n\n" +
     "For additional features, faster feedback, and support use [abaplint.app](https://abaplint.app)";
