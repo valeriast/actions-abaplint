@@ -50,7 +50,7 @@ function buildSummary() {
 }
 
 async function run() {
-  const annotations = buildAnnotations();
+  let annotations = buildAnnotations();
   const summary = buildSummary();
 
   octokit.authenticate({
@@ -60,13 +60,15 @@ async function run() {
 
   const repo = process.env.GITHUB_REPOSITORY.split("/");
   let arrayannotation = annotations
+  annotations = []
+  annotations.push(arrayannotation[0])
   const create = await octokit.checks.create({
     owner: repo[0],
     repo: repo[1],
     name: "results",
     status: "completed",
-    conclusion: arrayannotation.length === 0 ? "success" : "failure",
-    output: {title: "Summary" , summary, arrayannotation},
+    conclusion: annotations.length === 0 ? "success" : "failure",
+    output: {title: "Summary" , summary, annotations},
     completed_at: new Date().toISOString(),
     head_sha: process.env.GITHUB_SHA});
 
