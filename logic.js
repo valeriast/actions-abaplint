@@ -59,14 +59,14 @@ async function run() {
   });
 
   const repo = process.env.GITHUB_REPOSITORY.split("/");
-  const arrayannotation = annotations
+  let arrayannotation = annotations
   const create = await octokit.checks.create({
     owner: repo[0],
     repo: repo[1],
     name: "results",
     status: "completed",
-    conclusion: annotations.length === 0 ? "success" : "failure",
-    output: {title: "Summary" , summary, annotations},
+    conclusion: arrayannotation.length === 0 ? "success" : "failure",
+    output: {title: "Summary" , summary, arrayannotation},
     completed_at: new Date().toISOString(),
     head_sha: process.env.GITHUB_SHA});
 
