@@ -23,7 +23,7 @@ function buildAnnotations() {
     }
 
     if (annotations.length === 500) {
-      break; // only 1000 checks run allowed, but im limiting to 500 to not exceed api calls see https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28
+      break; // only 1000 errors appear, but im limiting to 500 to not exceed api calls see https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28
     }
   }
 
@@ -34,9 +34,8 @@ function buildAnnotations() {
 function buildSummary() {
   const actual = childProcess.execSync(`abaplint --version`).toString();
 
-  return annotationTotal + " issues found in total (all finding groups)"+ "\n\n" +
-    "What are finding groups? Github Actions has a limit of 50 annotations per API call." + "\n\n" +
-    "In order to overcome the limitation we create a finding group for each 50 issues found so all annotations will be displayed in files changed tab." + "\n\n" +
+  return annotationTotal + " issues found "+ "\n\n" +
+    "Issues limit 500." + "\n\n" +
     "Installed @abaplint/cli@" + process.env.INPUT_VERSION + "\n\n" +
     "Actual " + actual + "\n\n" +
     "For additional features, faster feedback, and support use [abaplint.app](https://abaplint.app)";
@@ -89,7 +88,7 @@ async function run() {
         status: statusCheck, 
         conclusion: annotations.length === 0 ? "success" : "failure",
         output: {
-          title: "Updated Summary",
+          title: "Summary",
           summary: summary,
           annotations: annotations,
         }});
