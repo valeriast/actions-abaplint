@@ -2,7 +2,7 @@
 
 It's based on https://github.com/abaplint/actions-abaplint.
 
-The purpose is to create annotation only for changed files.
+The purpose is to create annotations only for changed files in a Pull request. This action also overcomes the 50 annotations GitHub limit, it displays around 500 annotation.
 
 ### Usage
 Example using git diff command to retrieve changed file
