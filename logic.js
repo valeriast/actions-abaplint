@@ -3,7 +3,6 @@ const fs = require('fs');
 const octokit = require('@octokit/rest')({
     baseUrl: process.env.GITHUB_API_URL,
 });
-let annotationTotal = 0;
 
 function buildAnnotations() {
   const val = fs.readFileSync("/result.json", "utf-8");
@@ -27,14 +26,13 @@ function buildAnnotations() {
     }
   }
 
-  annotationTotal = annotations.length
   return annotations;
 }
 
 function buildSummary() {
   const actual = childProcess.execSync(`abaplint --version`).toString();
 
-  return annotationTotal + " issues found "+ "\n\n" +
+  return annotations.length + " issues found "+ "\n\n" +
     "Issues limit 500." + "\n\n" +
     "Installed @abaplint/cli@" + process.env.INPUT_VERSION + "\n\n" +
     "Actual " + actual + "\n\n" +
@@ -42,7 +40,6 @@ function buildSummary() {
 }
 
 async function run() {
-  const batchsize = 50
   let annotations = buildAnnotations();
   const summary = buildSummary();
 
@@ -52,26 +49,60 @@ async function run() {
   });
 
   const repo = process.env.GITHUB_REPOSITORY.split("/");
-  let arrayannotation = annotations
-  let annotationCount = 0
-  let annotationlimit = annotations.length
-  let needsUpdate = 0
-  let statusCheck = "in_progress"
-  let checkrunid = 0
-  annotations = []
-  const create = await octokit.checks.create({
+
+  const batchSize = 50;
+  let checkrunid = 0;
+
+ for (let i = 0; i < annotations.length; i += batchSize) {
+    const batchAnnotations = annotations.slice(i, i + batchSize);
+    const statusCheck = i + batchSize >= annotations.length ? "completed" : "in_progress";
+
+    try {
+  
+      if (checkrunid === 0) {
+          const create = await octokit.checks.create({
           owner: repo[0],
           repo: repo[1],
           name: 'results',
           status: statusCheck,
           conclusion: annotations.length === 0 ? "success" : "failure",
           output: {
-            title: "Summary" , 
+            title: "Summary", 
             summary: summary, 
-            annotations: annotations.length >= 50 ? annotations.slice(0, batchsize) :  annotations.slice(0, annotations.length )  },
+            annotations: batchAnnotations
+          },
           completed_at: new Date().toISOString(),
           head_sha: process.env.GITHUB_SHA});
+          
+          checkrunid = create.data.id
+      }else{
+        const update = await octokit.checks.update({
+          owner: repo[0],
+          repo: repo[1],
+          check_run_id: checkrunid, 
+          status: statusCheck, 
+          conclusion: annotations.length === 0 ? "success" : "failure",
+          output: {
+            title: "Summary",
+            summary: summary,
+            annotations: batchAnnotations,
+          }});
+      }
   
+    } catch (error) {
+      console.error("Error creating or updating check:", error);
+      throw error;
+  }
+}
+
+  // let arrayannotation = annotations
+  // let annotationCount = 0
+  // let annotationlimit = annotations.length
+  // let needsUpdate = 0
+  // let statusCheck = "in_progress"
+  // let checkrunid = 0
+  // annotations = []
+
   // for(let annotation of arrayannotation) {
   //   annotations.push(annotation)
   //   annotationCount++
