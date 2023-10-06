@@ -75,7 +75,7 @@ async function run() {
         output: {
           title: "Summary" , 
           summary: summary, 
-          annotations: annotations},
+          annotations: annotations.slice(0,annotationCount)},
         completed_at: new Date().toISOString(),
         head_sha: process.env.GITHUB_SHA});
 
