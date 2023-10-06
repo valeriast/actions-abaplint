@@ -68,7 +68,7 @@ async function run() {
           output: {
             title: "Summary" , 
             summary: summary, 
-            annotations: annotations.slice(0, batchsize) },
+            annotations: annotations.length >= 50 ? annotations.slice(0, batchsize) :  annotations.slice(0, annotations.length )  },
           completed_at: new Date().toISOString(),
           head_sha: process.env.GITHUB_SHA});
   
