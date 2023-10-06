@@ -57,6 +57,7 @@ async function run() {
   let needsUpdate = 0
   let statusCheck = "in_progress"
   let checkrunid = 0
+  let lastannotationindex = 0
   annotations = []
   for(let annotation of arrayannotation) {
     annotations.push(annotation)
@@ -78,7 +79,8 @@ async function run() {
           annotations: annotations.slice(0,annotationCount)},
         completed_at: new Date().toISOString(),
         head_sha: process.env.GITHUB_SHA});
-
+        
+        lastannotationindex = annotationCount
         needsUpdate = 1
         annotationCount = 0
         annotations = []
@@ -93,8 +95,9 @@ async function run() {
         output: {
           title: "Summary",
           summary: summary,
-          annotations: annotations,
+          annotations: annotations.slice(lastannotationindex, annotationCount),
         }});
+        lastannotationindex + annotationCount
         annotations = []
         annotationCount = 0
     }
