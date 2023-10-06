@@ -42,6 +42,7 @@ function buildSummary() {
 }
 
 async function run() {
+  const batchsize = 50
   let annotations = buildAnnotations();
   const summary = buildSummary();
 
@@ -58,44 +59,57 @@ async function run() {
   let statusCheck = "in_progress"
   let checkrunid = 0
   annotations = []
-  for(let annotation of arrayannotation) {
-    annotations.push(annotation)
-    annotationCount++
-    annotationlimit--
-    if (annotationlimit === 0 ){
-      statusCheck = "completed"
-    }
-    if ((annotationCount === 50 && needsUpdate === 0 ) || annotationlimit === 0  && needsUpdate === 0){
-      const create = await octokit.checks.create({
-        owner: repo[0],
-        repo: repo[1],
-        name: 'results',
-        status: statusCheck,
-        conclusion: annotations.length === 0 ? "success" : "failure",
-        output: {title: "Summary" , summary, annotations},
-        completed_at: new Date().toISOString(),
-        head_sha: process.env.GITHUB_SHA});
+  const create = await octokit.checks.create({
+          owner: repo[0],
+          repo: repo[1],
+          name: 'results',
+          status: statusCheck,
+          conclusion: annotations.length === 0 ? "success" : "failure",
+          output: {
+            title: "Summary" , 
+            summary: summary, 
+            annotations: annotations.slice(0, batchsize) },
+          completed_at: new Date().toISOString(),
+          head_sha: process.env.GITHUB_SHA});
+  
+  // for(let annotation of arrayannotation) {
+  //   annotations.push(annotation)
+  //   annotationCount++
+  //   annotationlimit--
+  //   if (annotationlimit === 0 ){
+  //     statusCheck = "completed"
+  //   }
+  //   if ((annotationCount === 50 && needsUpdate === 0 ) || annotationlimit === 0  && needsUpdate === 0){
+  //     const create = await octokit.checks.create({
+  //       owner: repo[0],
+  //       repo: repo[1],
+  //       name: 'results',
+  //       status: statusCheck,
+  //       conclusion: annotations.length === 0 ? "success" : "failure",
+  //       output: {title: "Summary" , summary, annotations},
+  //       completed_at: new Date().toISOString(),
+  //       head_sha: process.env.GITHUB_SHA});
 
-        needsUpdate = 1
-        annotationCount = 0
-        annotations = []
-        checkrunid = create.data.id
-    }else if ((annotationCount === 50 && needsUpdate === 1) || ( annotationlimit === 0  && needsUpdate === 1 )){
-      const update = await octokit.checks.update({
-        owner: repo[0],
-        repo: repo[1],
-        check_run_id: checkrunid, 
-        status: statusCheck, 
-        conclusion: annotations.length === 0 ? "success" : "failure",
-        output: {
-          title: "Summary",
-          summary: summary,
-          annotations: annotations,
-        }});
-        annotations = []
-        annotationCount = 0
-    }
-  }
+  //       needsUpdate = 1
+  //       annotationCount = 0
+  //       annotations = []
+  //       checkrunid = create.data.id
+  //   }else if ((annotationCount === 50 && needsUpdate === 1) || ( annotationlimit === 0  && needsUpdate === 1 )){
+  //     const update = await octokit.checks.update({
+  //       owner: repo[0],
+  //       repo: repo[1],
+  //       check_run_id: checkrunid, 
+  //       status: statusCheck, 
+  //       conclusion: annotations.length === 0 ? "success" : "failure",
+  //       output: {
+  //         title: "Summary",
+  //         summary: summary,
+  //         annotations: annotations,
+  //       }});
+  //       annotations = []
+  //       annotationCount = 0
+  //   }
+  // }
 }
   
 run().then(text => {
