@@ -57,7 +57,7 @@ async function run() {
   let statusCheck = "in_progress"
   let checkrunid = 0
   let lastannotationindex = 0
-  annotations = []
+
   for(let annotation of annotations) {
     annotationCount++
     annotationlimit--
