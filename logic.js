@@ -51,7 +51,6 @@ async function run() {
   });
 
   const repo = process.env.GITHUB_REPOSITORY.split("/");
-  let arrayannotation = annotations
   let annotationCount = 0
   let annotationlimit = annotations.length
   let needsUpdate = 0
@@ -59,8 +58,7 @@ async function run() {
   let checkrunid = 0
   let lastannotationindex = 0
   annotations = []
-  for(let annotation of arrayannotation) {
-    annotations.push(annotation)
+  for(let annotation of annotations) {
     annotationCount++
     annotationlimit--
     if (annotationlimit === 0 ){
@@ -80,10 +78,9 @@ async function run() {
         completed_at: new Date().toISOString(),
         head_sha: process.env.GITHUB_SHA});
         
-        lastannotationindex = annotationCount
+        lastannotationindex = annotationCount - 1
         needsUpdate = 1
         annotationCount = 0
-        annotations = []
         checkrunid = create.data.id
     }else if ((annotationCount === 50 && needsUpdate === 1) || ( annotationlimit === 0  && needsUpdate === 1 )){
       const update = await octokit.checks.update({
@@ -98,7 +95,6 @@ async function run() {
           annotations: annotations.slice(lastannotationindex, annotationCount),
         }});
         lastannotationindex + annotationCount
-        annotations = []
         annotationCount = 0
     }
   }
