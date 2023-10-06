@@ -94,7 +94,7 @@ async function run() {
           summary: summary,
           annotations: annotations.slice(lastannotationindex, annotationCount),
         }});
-        lastannotationindex + annotationCount
+        lastannotationindex += annotationCount
         annotationCount = 0
     }
   }
