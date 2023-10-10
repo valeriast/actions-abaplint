@@ -58,7 +58,7 @@ async function run() {
   let checkrunid = 0
   let lastannotationindex = 0
 
-  for(let annotation of annotations) {
+  for(let i = 0 ; i < annotationTotal; i++) {
     annotationCount++
     annotationlimit--
     if (annotationlimit === 0 ){
