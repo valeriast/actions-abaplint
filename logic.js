@@ -53,10 +53,8 @@ async function run() {
   const repo = process.env.GITHUB_REPOSITORY.split("/");
   let annotationCount = 0
   let annotationlimit = annotations.length
-  let needsUpdate = 0
   let statusCheck = "in_progress"
   let checkrunid = 0
-  let lastannotationindex = 0
 
   for(let i = 0 ; i < annotationTotal; i++) {
     annotationCount++
@@ -64,32 +62,31 @@ async function run() {
     if (annotationlimit === 0 ){
       statusCheck = "completed"
     }
-    if ((annotationCount === 50 && needsUpdate === 0 ) || annotationlimit === 0  && needsUpdate === 0){
+    if ((annotationCount === 50 && checkrunid === 0 ) || annotationlimit === 0  && checkrunid === 0){
       const create = await octokit.checks.create({
         owner: repo[0],
         repo: repo[1],
         name: 'results',
         status: statusCheck,
-        conclusion: annotations.length === 0 ? "success" : "failure",
+        conclusion: annotationTotal === 0 ? "success" : "failure",
         output: {
-          title: "Summary" , 
+          title: annotationTotal === 0 ? "No issues found." : annotationTotal + " issues found.", 
           summary: summary, 
           annotations: annotations.splice(0,annotationCount)},
         completed_at: new Date().toISOString(),
         head_sha: process.env.GITHUB_SHA});
-        
-        needsUpdate = 1
+  
         annotationCount = 0
         checkrunid = create.data.id
-    }else if ((annotationCount === 50 && needsUpdate === 1) || ( annotationlimit === 0  && needsUpdate === 1 )){
+    }else if ((annotationCount === 50 && checkrunid !== 1) || ( annotationlimit === 0  && checkrunid !== 0 )){
       const update = await octokit.checks.update({
         owner: repo[0],
         repo: repo[1],
         check_run_id: checkrunid, 
         status: statusCheck, 
-        conclusion: annotations.length === 0 ? "success" : "failure",
+        conclusion: annotationTotal === 0 ? "success" : "failure",
         output: {
-          title: "Summary",
+          title: annotationTotal === 0 ? "No issues found." : annotationTotal + " issues found.",
           summary: summary,
           annotations: annotations.splice(0, annotationCount),
         }});
