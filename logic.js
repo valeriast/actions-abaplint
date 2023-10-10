@@ -74,11 +74,10 @@ async function run() {
         output: {
           title: "Summary" , 
           summary: summary, 
-          annotations: annotations.slice(0,annotationCount)},
+          annotations: annotations.splice(0,annotationCount)},
         completed_at: new Date().toISOString(),
         head_sha: process.env.GITHUB_SHA});
         
-        lastannotationindex = annotationCount
         needsUpdate = 1
         annotationCount = 0
         checkrunid = create.data.id
@@ -92,9 +91,8 @@ async function run() {
         output: {
           title: "Summary",
           summary: summary,
-          annotations: annotations.slice(lastannotationindex, annotationCount),
+          annotations: annotations.splice(0, annotationCount),
         }});
-        lastannotationindex += annotationCount
         annotationCount = 0
     }
   }
