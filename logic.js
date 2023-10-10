@@ -78,7 +78,7 @@ async function run() {
         completed_at: new Date().toISOString(),
         head_sha: process.env.GITHUB_SHA});
         
-        lastannotationindex = annotationCount - 1
+        lastannotationindex = annotationCount
         needsUpdate = 1
         annotationCount = 0
         checkrunid = create.data.id
