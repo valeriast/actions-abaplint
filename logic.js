@@ -34,7 +34,7 @@ function buildAnnotations() {
 function buildSummary() {
   const actual = childProcess.execSync(`abaplint --version`).toString();
 
-  return "Max issues displayed are 500 (To increase this limit please open an issue in https://github.com/valeriast/actions-abaplint)." + "\n\n" +
+  return "Max issues displayed are 500 (To increase this limit please open an issue at https://github.com/valeriast/actions-abaplint)." + "\n\n" +
     "Installed @abaplint/cli@" + process.env.INPUT_VERSION + "\n\n" +
     "Actual " + actual + "\n\n" +
     "For additional features, faster feedback, and support use [abaplint.app](https://abaplint.app)";
