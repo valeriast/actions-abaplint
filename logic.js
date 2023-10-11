@@ -110,9 +110,9 @@ async function run() {
   await Promise.all(batchPromises); // Wait for all batched API requests to complete
 }
   
-run().then(text => {
+await run().then(text => {
   process.exit();
 }).catch(err => {
-  // console.dir(err);
+  console.dir(err);
   process.exit(1);
 });
