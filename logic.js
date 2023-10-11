@@ -72,11 +72,11 @@ async function run() {
           completed_at: new Date().toISOString(),
           head_sha: process.env.GITHUB_SHA,
         });
+        checkrunid = create.data.id;
       }catch (error){
         console.log('API create request error', error);
         process.exit(1);
       }
-      checkrunid = create.data.id;
   }
   while (annotations.length > 0) {
     // if ( annotations.length >= 50 ){
