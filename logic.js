@@ -40,6 +40,26 @@ function buildSummary() {
     "For additional features, faster feedback, and support use [abaplint.app](https://abaplint.app)";
 }
 
+async function updatecheck(repo,checkrunid, statusCheck, summary ){
+  try {
+    const update = await octokit.checks.update({
+      owner: repo[0],
+      repo: repo[1],
+      check_run_id: checkrunid,
+      status: statusCheck,
+      conclusion: annotationTotal === 0 ? "success" : "failure",
+      output: {
+        title: annotationTotal === 0 ? "No issues found." : annotationTotal + " issues found.",
+        summary: summary,
+        annotations: annotations.length >= 50 ? annotations.splice(0, batchSize) : annotations.splice(0, annotations.length),
+      },
+    });
+  }catch (error){
+    console.log('API update request error', error);
+    process.exit(1);
+  }
+}
+
 async function run() {
   let annotations = buildAnnotations();
   const summary = buildSummary();
@@ -56,58 +76,36 @@ async function run() {
   const batchPromises = [];
   const batchSize = 50; // Adjust this batch size as needed
   const chunk = [];
-  if (annotations.length > 0) {
-    (async () => {  // Define an IIFE, making it an async function
-      try {
-        const create = await octokit.checks.create({
-          owner: repo[0],
-          repo: repo[1],
-          name: 'results',
-          status: statusCheck,
-          conclusion: annotationTotal === 0 ? "success" : "failure",
-          output: {
-            title: annotationTotal === 0 ? "No issues found." : annotationTotal + " issues found.",
-            summary: summary,
-            annotations: annotations.length >= 50 ? annotations.splice(0, batchSize) : annotations.splice(0, annotations.length),
-          },
-          completed_at: new Date().toISOString(),
-          head_sha: process.env.GITHUB_SHA,
-        });
-  
-        checkrunid = create.data.id;
-
-        while (annotations.length > 0) {
-          batchPromises.push(
-            (async () => {  // Another IIFE to allow async operations
-              if (checkrunid !== 0) {
-                try {
-                  const update = await octokit.checks.update({
-                    owner: repo[0],
-                    repo: repo[1],
-                    check_run_id: checkrunid,
-                    status: statusCheck,
-                    conclusion: annotationTotal === 0 ? "success" : "failure",
-                    output: {
-                      title: annotationTotal === 0 ? "No issues found." : annotationTotal + " issues found.",
-                      summary: summary,
-                      annotations: annotations.length >= 50 ? annotations.splice(0, batchSize) : annotations.splice(0, annotations.length),
-                    },
-                  });
-                } catch (error) {
-                  console.log('API update request error', error);
-                  process.exit(1);
-                }
-              }
-            })()
-          );
+    if ( annotations.length > 0){
+    octokit.checks.create({
+      owner: repo[0],
+      repo: repo[1],
+      name: 'results',
+      status: statusCheck,
+      conclusion: annotationTotal === 0 ? "success" : "failure",
+      output: {
+        title: annotationTotal === 0 ? "No issues found." : annotationTotal + " issues found.",
+        summary: summary,
+        annotations: annotations.length >= 50 ? annotations.splice(0, batchSize) : annotations.splice(0, annotations.length),
+      },
+      completed_at: new Date().toISOString(),
+      head_sha: process.env.GITHUB_SHA,
+    }).then((create) => {
+      checkrunid = create.data.id;
+      while (annotations.length > 0) {
+        try {
+          updatecheck(repo, checkrunid, statusCheck, summary)
+        } catch (error) {
+          console.log('API create call error: ', error)
+          process.exit(1);
         }
-        // Use await to wait for all batched API requests to complete.
-        await Promise.all(batchPromises);
-      } catch (error) {
-        console.log('API create call error: ', error);
       }
-    })();
+     
+    }).catch((error) => {
+      console.log('API create call error: ', error)
+    })
   }
+
 }
 run().then(text => {
   process.exit();
