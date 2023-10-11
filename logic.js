@@ -65,36 +65,44 @@ async function run() {
   
     batchPromises.push(
       (async () => {
-        if (checkrunid === 0) {
-          const create = await octokit.checks.create({
-            owner: repo[0],
-            repo: repo[1],
-            name: 'results',
-            status: statusCheck,
-            conclusion: annotationTotal === 0 ? "success" : "failure",
-            output: {
-              title: annotationTotal === 0 ? "No issues found." : annotationTotal + " issues found.",
-              summary: summary,
-              annotations: chunk,
-            },
-            completed_at: new Date().toISOString(),
-            head_sha: process.env.GITHUB_SHA,
-          });
+          if (checkrunid === 0) {
+            try {
+              const create = await octokit.checks.create({
+                owner: repo[0],
+                repo: repo[1],
+                name: 'results',
+                status: statusCheck,
+                conclusion: annotationTotal === 0 ? "success" : "failure",
+                output: {
+                  title: annotationTotal === 0 ? "No issues found." : annotationTotal + " issues found.",
+                  summary: summary,
+                  annotations: chunk,
+                },
+                completed_at: new Date().toISOString(),
+                head_sha: process.env.GITHUB_SHA,
+              });
+              checkrunid = create.data.id;
+          }catch (error){
+            console.error('API create request error ', error)
+          }
 
-          checkrunid = create.data.id;
         } else {
-          const update = await octokit.checks.update({
-            owner: repo[0],
-            repo: repo[1],
-            check_run_id: checkrunid,
-            status: statusCheck,
-            conclusion: annotationTotal === 0 ? "success" : "failure",
-            output: {
-              title: annotationTotal === 0 ? "No issues found." : annotationTotal + " issues found.",
-              summary: summary,
-              annotations: chunk,
-            },
-          });
+          try {
+            const update = await octokit.checks.update({
+              owner: repo[0],
+              repo: repo[1],
+              check_run_id: checkrunid,
+              status: statusCheck,
+              conclusion: annotationTotal === 0 ? "success" : "failure",
+              output: {
+                title: annotationTotal === 0 ? "No issues found." : annotationTotal + " issues found.",
+                summary: summary,
+                annotations: chunk,
+              },
+            });
+          }catch (error){
+            console.error('API create request error ', error)
+          }
         }
       })()
     );
