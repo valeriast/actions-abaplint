@@ -56,6 +56,28 @@ async function run() {
   const batchPromises = [];
   const batchSize = 50; // Adjust this batch size as needed
   const chunk = [];
+  if ( annotations.length > 0){
+    try {
+        const create = await octokit.checks.create({
+          owner: repo[0],
+          repo: repo[1],
+          name: 'results',
+          status: statusCheck,
+          conclusion: annotationTotal === 0 ? "success" : "failure",
+          output: {
+            title: annotationTotal === 0 ? "No issues found." : annotationTotal + " issues found.",
+            summary: summary,
+            annotations: annotations.length >= 50 ? annotations.splice(0, batchSize) : annotations.splice(0, annotations.length),
+          },
+          completed_at: new Date().toISOString(),
+          head_sha: process.env.GITHUB_SHA,
+        });
+      }catch (error){
+        console.log('API create request error', error);
+        process.exit(1);
+      }
+      checkrunid = create.data.id;
+  }
   while (annotations.length > 0) {
     // if ( annotations.length >= 50 ){
     //   chunk = annotations.splice(0, batchSize);
@@ -65,12 +87,12 @@ async function run() {
   
     batchPromises.push(
       (async () => {
-          if (checkrunid === 0) {
+          if (checkrunid !== 0) {
             try {
-              const create = await octokit.checks.create({
+              const update = await octokit.checks.update({
                 owner: repo[0],
                 repo: repo[1],
-                name: 'results',
+                check_run_id: checkrunid,
                 status: statusCheck,
                 conclusion: annotationTotal === 0 ? "success" : "failure",
                 output: {
@@ -78,34 +100,13 @@ async function run() {
                   summary: summary,
                   annotations: annotations.length >= 50 ? annotations.splice(0, batchSize) : annotations.splice(0, annotations.length),
                 },
-                completed_at: new Date().toISOString(),
-                head_sha: process.env.GITHUB_SHA,
               });
-          }catch (error){
-            console.log('API create request error', error);
-            process.exit(1);
+            }catch (error){
+              console.log('API update request error', error);
+              process.exit(1);
+            }
           }
-          checkrunid = create.data.id;
-        } else {
-          try {
-            const update = await octokit.checks.update({
-              owner: repo[0],
-              repo: repo[1],
-              check_run_id: checkrunid,
-              status: statusCheck,
-              conclusion: annotationTotal === 0 ? "success" : "failure",
-              output: {
-                title: annotationTotal === 0 ? "No issues found." : annotationTotal + " issues found.",
-                summary: summary,
-                annotations: annotations.length >= 50 ? annotations.splice(0, batchSize) : annotations.splice(0, annotations.length),
-              },
-            });
-          }catch (error){
-            console.log('API update request error', error);
-            process.exit(1);
-          }
-        }
-      })()
+        })
     );
   }
   await Promise.all(batchPromises); // Wait for all batched API requests to complete
