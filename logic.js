@@ -76,8 +76,8 @@ async function run() {
   const batchPromises = [];
   const batchSize = 50; // Adjust this batch size as needed
   const chunk = [];
-    if ( annotations.length > 0){
-    octokit.checks.create({
+  if ( annotations.length > 0){
+    await octokit.checks.create({
       owner: repo[0],
       repo: repo[1],
       name: 'results',
@@ -92,18 +92,18 @@ async function run() {
       head_sha: process.env.GITHUB_SHA,
     }).then((create) => {
       checkrunid = create.data.id;
-      while (annotations.length > 0) {
-        try {
-          updatecheck(repo, checkrunid, statusCheck, summary)
-        } catch (error) {
-          console.log('API create call error: ', error)
-          process.exit(1);
-        }
-      }
-     
     }).catch((error) => {
       console.log('API create call error: ', error)
     })
+
+    while (annotations.length > 0) {
+      try {
+        await updatecheck(repo, checkrunid, statusCheck, summary)
+      } catch (error) {
+        console.log('API create call error: ', error)
+        process.exit(1);
+      }
+    }
   }
 
 }
