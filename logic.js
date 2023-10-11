@@ -57,11 +57,11 @@ async function run() {
   const batchSize = 50; // Adjust this batch size as needed
   const chunk = [];
   while (annotations.length > 0) {
-    if ( annotations.length >= 50 ){
-      chunk = annotations.splice(0, batchSize);
-    }else{
-      chunk = annotations.splice(0, annotations.length);
-    }
+    // if ( annotations.length >= 50 ){
+    //   chunk = annotations.splice(0, batchSize);
+    // }else{
+    //   chunk = annotations.splice(0, annotations.length);
+    // }
   
     batchPromises.push(
       (async () => {
@@ -76,7 +76,7 @@ async function run() {
                 output: {
                   title: annotationTotal === 0 ? "No issues found." : annotationTotal + " issues found.",
                   summary: summary,
-                  annotations: chunk,
+                  annotations: annotations.length >= 50 ? annotations.splice(0, batchSize) : annotations.splice(0, annotations.length),
                 },
                 completed_at: new Date().toISOString(),
                 head_sha: process.env.GITHUB_SHA,
@@ -98,7 +98,7 @@ async function run() {
               output: {
                 title: annotationTotal === 0 ? "No issues found." : annotationTotal + " issues found.",
                 summary: summary,
-                annotations: chunk,
+                annotations: annotations.length >= 50 ? annotations.splice(0, batchSize) : annotations.splice(0, annotations.length),
               },
             });
           }catch (error){
