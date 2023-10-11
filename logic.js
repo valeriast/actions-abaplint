@@ -40,26 +40,6 @@ function buildSummary() {
     "For additional features, faster feedback, and support use [abaplint.app](https://abaplint.app)";
 }
 
-async function updatecheck(repo,checkrunid, statusCheck, summary ){
-  try {
-    const update = await octokit.checks.update({
-      owner: repo[0],
-      repo: repo[1],
-      check_run_id: checkrunid,
-      status: statusCheck,
-      conclusion: annotationTotal === 0 ? "success" : "failure",
-      output: {
-        title: annotationTotal === 0 ? "No issues found." : annotationTotal + " issues found.",
-        summary: summary,
-        annotations: annotations.length >= 50 ? annotations.splice(0, batchSize) : annotations.splice(0, annotations.length),
-      },
-    });
-  }catch (error){
-    console.log('API update request error', error);
-    process.exit(1);
-  }
-}
-
 async function run() {
   let annotations = buildAnnotations();
   const summary = buildSummary();
@@ -98,9 +78,20 @@ async function run() {
 
     while (annotations.length > 0) {
       try {
-        await updatecheck(repo, checkrunid, statusCheck, summary)
-      } catch (error) {
-        console.log('API create call error: ', error)
+        const update = await octokit.checks.update({
+          owner: repo[0],
+          repo: repo[1],
+          check_run_id: checkrunid,
+          status: statusCheck,
+          conclusion: annotationTotal === 0 ? "success" : "failure",
+          output: {
+            title: annotationTotal === 0 ? "No issues found." : annotationTotal + " issues found.",
+            summary: summary,
+            annotations: annotations.length >= 50 ? annotations.splice(0, batchSize) : annotations.splice(0, annotations.length),
+          },
+        });
+      }catch (error){
+        console.log('API update request error', error);
         process.exit(1);
       }
     }
