@@ -50,48 +50,56 @@ async function run() {
   });
 
   const repo = process.env.GITHUB_REPOSITORY.split("/");
-  let annotationCount = 0
-  let annotationlimit = annotations.length
+
   let statusCheck = "in_progress"
   let checkrunid = 0
-
-  for(let i = 0 ; i < annotationTotal; i++) {
-    annotationCount++
-    annotationlimit--
-    if (annotationlimit === 0 ){
-      statusCheck = "completed"
+  const batchPromises = [];
+  const batchSize = 50; // Adjust this batch size as needed
+  const chunk = [];
+  while (annotations.length > 0) {
+    if ( annotations.length >= 50 ){
+      chunk = annotations.splice(0, batchSize);
+    }else{
+      chunk = annotations.splice(0, annotations.length);
     }
-    if ((annotationCount === 50 && checkrunid === 0 ) || annotationlimit === 0  && checkrunid === 0){
-      const create = await octokit.checks.create({
-        owner: repo[0],
-        repo: repo[1],
-        name: 'results',
-        status: statusCheck,
-        conclusion: annotationTotal === 0 ? "success" : "failure",
-        output: {
-          title: annotationTotal === 0 ? "No issues found." : annotationTotal + " issues found.", 
-          summary: summary, 
-          annotations: annotations.splice(0,annotationCount)},
-        completed_at: new Date().toISOString(),
-        head_sha: process.env.GITHUB_SHA});
   
-        annotationCount = 0
-        checkrunid = create.data.id
-    }else if ((annotationCount === 50 && checkrunid !== 1) || ( annotationlimit === 0  && checkrunid !== 0 )){
-      const update = await octokit.checks.update({
-        owner: repo[0],
-        repo: repo[1],
-        check_run_id: checkrunid, 
-        status: statusCheck, 
-        conclusion: annotationTotal === 0 ? "success" : "failure",
-        output: {
-          title: annotationTotal === 0 ? "No issues found." : annotationTotal + " issues found.",
-          summary: summary,
-          annotations: annotations.splice(0, annotationCount),
-        }});
-        annotationCount = 0
-    }
+    batchPromises.push(
+      (async () => {
+        if (checkrunid === 0) {
+          const create = await octokit.checks.create({
+            owner: repo[0],
+            repo: repo[1],
+            name: 'results',
+            status: statusCheck,
+            conclusion: annotationTotal === 0 ? "success" : "failure",
+            output: {
+              title: annotationTotal === 0 ? "No issues found." : annotationTotal + " issues found.",
+              summary: summary,
+              annotations: chunk,
+            },
+            completed_at: new Date().toISOString(),
+            head_sha: process.env.GITHUB_SHA,
+          });
+
+          checkrunid = create.data.id;
+        } else {
+          const update = await octokit.checks.update({
+            owner: repo[0],
+            repo: repo[1],
+            check_run_id: checkrunid,
+            status: statusCheck,
+            conclusion: annotationTotal === 0 ? "success" : "failure",
+            output: {
+              title: annotationTotal === 0 ? "No issues found." : annotationTotal + " issues found.",
+              summary: summary,
+              annotations: chunk,
+            },
+          });
+        }
+      })()
+    );
   }
+  await Promise.all(batchPromises); // Wait for all batched API requests to complete
 }
   
 run().then(text => {
