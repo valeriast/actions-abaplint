@@ -23,7 +23,7 @@ function buildAnnotations() {
     }
 
     if (annotations.length === 500) {
-      break; // only 1000 errors appear, but im limiting to 500 to not exceed api calls see https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28
+      break; // only 1000 errors appear, but im limiting to 500 to not make many api calls.
     }
   }
 
@@ -51,20 +51,17 @@ async function run() {
 
   const repo = process.env.GITHUB_REPOSITORY.split("/");
 
-  let statusCheck = "in_progress"
   let checkrunid = 0
-  const batchPromises = [];
-  const batchSize = 50; // Adjust this batch size as needed
-  const chunk = [];
+  const batchSize = 50;
   if ( annotations.length > 0){
     await octokit.checks.create({
       owner: repo[0],
       repo: repo[1],
       name: 'results',
-      status: statusCheck,
-      conclusion: annotationTotal === 0 ? "success" : "failure",
+      status: "in_progress",
+      conclusion: "failure",
       output: {
-        title: annotationTotal === 0 ? "No issues found." : annotationTotal + " issues found.",
+        title: annotationTotal + " issues found.",
         summary: summary,
         annotations: annotations.length >= 50 ? annotations.splice(0, batchSize) : annotations.splice(0, annotations.length),
       },
@@ -82,10 +79,10 @@ async function run() {
           owner: repo[0],
           repo: repo[1],
           check_run_id: checkrunid,
-          status: statusCheck,
-          conclusion: annotationTotal === 0 ? "success" : "failure",
+          status: "in_progress",
+          conclusion: "failure",
           output: {
-            title: annotationTotal === 0 ? "No issues found." : annotationTotal + " issues found.",
+            title: annotationTotal + " issues found.",
             summary: summary,
             annotations: annotations.length >= 50 ? annotations.splice(0, batchSize) : annotations.splice(0, annotations.length),
           },
