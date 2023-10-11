@@ -83,7 +83,7 @@ async function run() {
               });
               checkrunid = create.data.id;
           }catch (error){
-            console.error('API create request error ', error)
+            console.log('API create request error ', error)
           }
 
         } else {
@@ -101,7 +101,7 @@ async function run() {
               },
             });
           }catch (error){
-            console.error('API create request error ', error)
+            console.log('API create request error ', error)
           }
         }
       })()
