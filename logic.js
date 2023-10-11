@@ -56,8 +56,9 @@ async function run() {
   const batchPromises = [];
   const batchSize = 50; // Adjust this batch size as needed
   const chunk = [];
-  if ( annotations.length > 0){
-    try {
+  if (annotations.length > 0) {
+    (async () => {  // Define an IIFE, making it an async function
+      try {
         const create = await octokit.checks.create({
           owner: repo[0],
           repo: repo[1],
@@ -72,46 +73,42 @@ async function run() {
           completed_at: new Date().toISOString(),
           head_sha: process.env.GITHUB_SHA,
         });
+  
         checkrunid = create.data.id;
-      }catch (error){
-        console.log('API create request error', error);
-        process.exit(1);
+
+        while (annotations.length > 0) {
+          batchPromises.push(
+            (async () => {  // Another IIFE to allow async operations
+              if (checkrunid !== 0) {
+                try {
+                  const update = await octokit.checks.update({
+                    owner: repo[0],
+                    repo: repo[1],
+                    check_run_id: checkrunid,
+                    status: statusCheck,
+                    conclusion: annotationTotal === 0 ? "success" : "failure",
+                    output: {
+                      title: annotationTotal === 0 ? "No issues found." : annotationTotal + " issues found.",
+                      summary: summary,
+                      annotations: annotations.length >= 50 ? annotations.splice(0, batchSize) : annotations.splice(0, annotations.length),
+                    },
+                  });
+                } catch (error) {
+                  console.log('API update request error', error);
+                  process.exit(1);
+                }
+              }
+            })()
+          );
+        }
+        // Use await to wait for all batched API requests to complete.
+        await Promise.all(batchPromises);
+      } catch (error) {
+        console.log('API create call error: ', error);
       }
+    })();
   }
-  while (annotations.length > 0) {
-    // if ( annotations.length >= 50 ){
-    //   chunk = annotations.splice(0, batchSize);
-    // }else{
-    //   chunk = annotations.splice(0, annotations.length);
-    // }
-  
-    batchPromises.push(
-      (async () => {
-          if (checkrunid !== 0) {
-            try {
-              const update = await octokit.checks.update({
-                owner: repo[0],
-                repo: repo[1],
-                check_run_id: checkrunid,
-                status: statusCheck,
-                conclusion: annotationTotal === 0 ? "success" : "failure",
-                output: {
-                  title: annotationTotal === 0 ? "No issues found." : annotationTotal + " issues found.",
-                  summary: summary,
-                  annotations: annotations.length >= 50 ? annotations.splice(0, batchSize) : annotations.splice(0, annotations.length),
-                },
-              });
-            }catch (error){
-              console.log('API update request error', error);
-              process.exit(1);
-            }
-          }
-        })
-    );
-  }
-  await Promise.all(batchPromises); // Wait for all batched API requests to complete
 }
-  
 run().then(text => {
   process.exit();
 }).catch(err => {
