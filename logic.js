@@ -83,7 +83,8 @@ async function run() {
               });
               checkrunid = create.data.id;
           }catch (error){
-            console.error('API create request error ', error)
+            console.error('API create request error', error);
+            process.exit(1);
           }
 
         } else {
@@ -101,7 +102,8 @@ async function run() {
               },
             });
           }catch (error){
-            console.error('API create request error ', error)
+            console.error('API update request error', error);
+            process.exit(1);
           }
         }
       })()
@@ -110,7 +112,7 @@ async function run() {
   await Promise.all(batchPromises); // Wait for all batched API requests to complete
 }
   
-await run().then(text => {
+run().then(text => {
   process.exit();
 }).catch(err => {
   console.dir(err);
