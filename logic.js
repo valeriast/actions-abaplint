@@ -12,7 +12,7 @@ function buildAnnotations() {
   const annotations = []
 
   for(let issue of issues) {
-     if (process.env.CHANGEDFILES.includes(issue.file.substring(2))) {
+    //  if (process.env.CHANGEDFILES.includes(issue.file.substring(2))) {
       annotations.push({
         path: issue.file.substring(2),
         start_line: issue.start.row,
@@ -20,7 +20,7 @@ function buildAnnotations() {
         title: issue.description,
         annotation_level: "failure",
         message: issue.key});
-    }
+    // }
 
     if (annotations.length === 500) {
       break; // only 1000 errors appear, but im limiting to 500 to not make many api calls.
