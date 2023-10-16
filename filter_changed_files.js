@@ -6,7 +6,8 @@ const files = process.env.CHANGEDFILES;
 const filesArray = files.split(' ');
 
 // Filtering to get only files that abaplint is able to lint
-acceptedfileextensions = /((clas.abap)|(ddls.asddls)|(clas.testclasses.abap))/;
+// TODO: Change it to not get specific files that crashes abaplint !unaccpetedextensions
+acceptedfileextensions = /((clas.abap)|(ddls.asddls)|(clas.testclasses.abap)|(intf.abap))/;
 const filteredfilesbyextension = filesArray.filter( item => acceptedfileextensions.test(item) );
 // Changed files format is something like this src/filename, I need to fix the path to be able to find the file /src/filename
 const fileswithfixedpath = filteredfilesbyextension.map( item => '/' + item )
