@@ -5,14 +5,19 @@ const files = process.env.CHANGEDFILES;
 // Changed files format is something like this "test test1 test2" In order to get each one of them I split using space between
 const filesArray = files.split(' ');
 
-// Filtering to get only files that abaplint is able to lint
-// TODO: Change it to not get specific files that crashes abaplint !unaccpetedextensions
-acceptedfileextensions = /((clas.abap)|(ddls.asddls)|(clas.testclasses.abap)|(intf.abap))/;
-const filteredfilesbyextension = filesArray.filter( item => acceptedfileextensions.test(item) );
-// Changed files format is something like this src/filename, I need to fix the path to be able to find the file /src/filename
+// Filtering to get only files that abaplint supports
+blockedextensions = /((ddls.baseinfo))/;
+const filteredfilesbyextension = filesArray.filter( item => !blockedextensions.test(item) );
+// Changed files format is something like this src/filename, it fixes the path to be able to find the file /src/filename
 const fileswithfixedpath = filteredfilesbyextension.map( item => '/' + item )
 // I then format it to pass to the json props separating each file with a comma
-const transformedFiles = `{${fileswithfixedpath.join(',')}}` ;
+let transformedFiles = ''
+if (fileswithfixedpath.length > 1){
+  transformedFiles = `{${fileswithfixedpath.join(',')}}` ;
+}else{
+  transformedFiles = fileswithfixedpath;
+}
+
 
 fs.readFile(`abaplint.json`, 'utf8', (err, data) => {
   if (err) {
@@ -29,7 +34,7 @@ fs.readFile(`abaplint.json`, 'utf8', (err, data) => {
         console.error(err);
         return;
       }
-      console.log('abaplint.json has been updated with only changed files.');
+      console.log('abaplint.json has been updated with only changed files.' + transformedFiles);
     });
   } catch (parseError) {
     console.error('Error parsing abaplint.json:', parseError);
