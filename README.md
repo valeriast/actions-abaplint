@@ -36,7 +36,7 @@ jobs:
         run: |
           {
             echo 'all<<EOF'
-            echo $(git diff --name-only ${{steps.getbranchname.outputs.current}}..origin/main --)
+            echo $(git diff --diff-filter=ACMRTUXB --name-only origin/master..${{steps.getbranchname.outputs.current}} --)
             echo EOF
           } >> "$GITHUB_OUTPUT"
       - name: abaplint
