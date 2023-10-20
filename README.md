@@ -6,6 +6,8 @@ The purpose is to create annotations only for changed files in a Pull request. T
 
 ### Usage
 Example using git diff command to retrieve changed file
+
+:warning: In step Get Changed Files remember to change origin/main to origin/master if that's your case.
 ```yml
 name: Abaplint
 
@@ -45,8 +47,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CHANGEDFILES: ${{ steps.changes.outputs.all }}
 ```
-In step Get Changed Files remember to change origin/main to origin/master if that's your case.
-
 The GITHUB_TOKEN is used to push back the results via the [Checks API](https://developer.github.com/v3/checks/)
 
 A specific version can be chosen by setting the `version` attribute, if not set, `@abaplint/cli@latest` will be used
