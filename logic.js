@@ -10,7 +10,7 @@ function buildAnnotations() {
   console.dir(val);
   const issues = JSON.parse(val);
   const annotations = []
-
+  var urltest = '<a href="https://rules.abaplint.org/" class="link-gray" rel="noreferrer noopener" data-test-selector="linkified">${issue.key}</a>'
   for(let issue of issues) {
       annotations.push({
         path: issue.file.substring(2),
@@ -18,7 +18,7 @@ function buildAnnotations() {
         end_line: issue.end.row,
         title: issue.description,
         annotation_level: "failure",
-        message: '<a href="https://rules.abaplint.org/" class="link-gray" rel="noreferrer noopener" data-test-selector="linkified">${issue.key}</a>'
+        message: urltest
       });
 
     if (annotations.length === 500) {
