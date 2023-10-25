@@ -18,7 +18,7 @@ function buildAnnotations() {
         end_line: issue.end.row,
         title: issue.description,
         annotation_level: "failure",
-        message: issue.key,
+        message: 'This is an issue: [Issue Link](https://rules.abaplint.org/)',
         raw_details: `https://rules.abaplint.org/${issue.key}`,
         actions: [{
           label: "Fix this",
