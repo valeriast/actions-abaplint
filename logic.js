@@ -19,7 +19,7 @@ function buildAnnotations() {
         end_line: issue.end.row,
         title: issue.description,
         annotation_level: "failure",
-        message: "wiki https://github.com/austinpray-mixpanel/gha-demo-annotation-links/wiki/GHA-0001"
+        message: "wiki https://rules.abaplint.org"
       });
 
     if (annotations.length === 500) {
