@@ -6,7 +6,9 @@ const files = process.env.CHANGEDFILES;
 const filesArray = files.split(' ');
 
 // Filtering to get only files that abaplint supports
-blockedextensions = /((ddls.baseinfo))/;
+// ddls.baseinfo - Currently crashes abaplint
+// srfr.xml  - Currently not supported
+blockedextensions = /((ddls.baseinfo)|(srfr.xml)|(srfs.xml ))/;
 const filteredfilesbyextension = filesArray.filter( item => !blockedextensions.test(item) );
 // Changed files format is something like this src/filename, it fixes the path to be able to find the file /src/filename
 const fileswithfixedpath = filteredfilesbyextension.map( item => '/' + item )
