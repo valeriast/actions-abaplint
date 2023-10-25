@@ -10,7 +10,7 @@ function buildAnnotations() {
   console.dir(val);
   const issues = JSON.parse(val);
   const annotations = []
-  var urltest = '<a href="https://rules.abaplint.org/" class="link-gray" rel="noreferrer noopener" data-test-selector="linkified">${issue.key}</a>'
+  var urltest = '&lt;a href="https://rules.abaplint.org/" class="link-gray" rel="noreferrer noopener" data-test-selector="linkified"&gt;${issue.key}&lt;/a&gt;'
   for(let issue of issues) {
       annotations.push({
         path: issue.file.substring(2),
