@@ -18,7 +18,7 @@ function buildAnnotations() {
         end_line: issue.end.row,
         title: issue.description,
         annotation_level: "failure",
-        message: 'wiki https://github.com/your/repo/wiki/GHA-0001'
+        message: 'Rule: issue.key | Rule Documentation:' + `https://rules.abaplint.org/${issue.key}`
       });
 
     if (annotations.length === 500) {
