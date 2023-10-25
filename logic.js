@@ -18,7 +18,8 @@ function buildAnnotations() {
         end_line: issue.end.row,
         title: issue.description,
         annotation_level: "failure",
-        message: `<a href="https://rules.abaplint.org/${issue.key}">${issue.key}</a>`
+        message: `<a href="https://rules.abaplint.org/${issue.key}">${issue.key}</a>`,
+        raw_details: `https://rules.abaplint.org/${issue.key}`
       });
 
     if (annotations.length === 500) {
