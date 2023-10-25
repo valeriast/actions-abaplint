@@ -19,14 +19,7 @@ function buildAnnotations() {
         title: issue.description,
         annotation_level: "failure",
         message: issueKey,
-        raw_details: `https://rules.abaplint.org/${issue.key}`,
-        actions: [
-          {
-            label: 'Dismiss',
-            description: 'Dismiss this issue',
-            identifier: 'dismiss_button'
-          }
-        ]
+        raw_details: `<a href="https://rules.abaplint.org/${issueKey}">${issueKey}</a>`,
       });
 
     if (annotations.length === 500) {
