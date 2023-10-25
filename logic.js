@@ -19,7 +19,7 @@ function buildAnnotations() {
         end_line: issue.end.row,
         title: issue.description,
         annotation_level: "failure",
-        message: messageurl
+        message: "https://rules.abaplint.org"
       });
 
     if (annotations.length === 500) {
