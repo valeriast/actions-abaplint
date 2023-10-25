@@ -18,7 +18,7 @@ function buildAnnotations() {
         end_line: issue.end.row,
         title: issue.description,
         annotation_level: "failure",
-        links: 'wiki https://github.com/your/repo/wiki/GHA-0001'
+        message: 'wiki https://github.com/your/repo/wiki/GHA-0001'
       });
 
     if (annotations.length === 500) {
