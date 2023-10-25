@@ -18,7 +18,7 @@ function buildAnnotations() {
         end_line: issue.end.row,
         title: issue.description,
         annotation_level: "failure",
-        message: urltest
+        message: "<p>test</p>"
       });
 
     if (annotations.length === 500) {
