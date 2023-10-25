@@ -18,13 +18,7 @@ function buildAnnotations() {
         end_line: issue.end.row,
         title: issue.description,
         annotation_level: "failure",
-        message: 'This is an issue: [Issue Link](https://rules.abaplint.org/)',
-        raw_details: `https://rules.abaplint.org/${issue.key}`,
-        actions: [{
-          label: "Fix this",
-          description: "Let us fix that for you",
-          identifier: "fix_errors"
-        }]
+        message: 'links::wiki https://github.com/your/repo/wiki/GHA-0001'
       });
 
     if (annotations.length === 500) {
