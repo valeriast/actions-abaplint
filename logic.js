@@ -20,13 +20,11 @@ function buildAnnotations() {
         annotation_level: "failure",
         message: issue.key,
         raw_details: `https://rules.abaplint.org/${issue.key}`,
-        actions: [
-          {
-            label: 'Dismiss',
-            description: 'Dismiss this issue',
-            identifier: 'dismiss_button'
-          }
-        ]
+        actions: [{
+          label: "Fix this",
+          description: "Let us fix that for you",
+          identifier: "fix_errors"
+        }]
       });
 
     if (annotations.length === 500) {
