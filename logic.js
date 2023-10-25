@@ -18,7 +18,7 @@ function buildAnnotations() {
         end_line: issue.end.row,
         title: issue.description,
         annotation_level: "failure",
-        message: "<p>test</p>"
+        message: "[abaplint.app](https://abaplint.app)"
       });
 
     if (annotations.length === 500) {
