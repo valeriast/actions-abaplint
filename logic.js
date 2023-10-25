@@ -19,7 +19,7 @@ function buildAnnotations() {
         title: issue.description,
         annotation_level: "failure",
         message: issue.key,
-        raw_details:`For more information about this rule got to https://rules.abaplint.org/${issue.key}`
+        raw_details:<a href="https://rules.abaplint.org/${issue.key}">test</a>
       });
 
     if (annotations.length === 500) {
