@@ -10,15 +10,16 @@ function buildAnnotations() {
   console.dir(val);
   const issues = JSON.parse(val);
   const annotations = []
-
+  let messageurl = ''
   for(let issue of issues) {
+      messageurl = `https://rules.abaplint.org/${issue.key}`
       annotations.push({
         path: issue.file.substring(2),
         start_line: issue.start.row,
         end_line: issue.end.row,
         title: issue.description,
         annotation_level: "failure",
-        message: `https://rules.abaplint.org/${issue.key}`
+        message: messageurl
       });
 
     if (annotations.length === 500) {
