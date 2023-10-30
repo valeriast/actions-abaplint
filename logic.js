@@ -16,7 +16,7 @@ function buildAnnotations() {
         path: issue.file.substring(2),
         start_line: issue.start.row,
         end_line: issue.end.row,
-        title: issue.description + " [abaplint.app](https://abaplint.app)",
+        title: issue.description + ` [abaplint.app](https://abaplint.app)`,
         annotation_level: "failure",
         message: "[abaplint.app](https://abaplint.app)"
       });
